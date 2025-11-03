@@ -1,0 +1,34 @@
+name: API Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Install Dependencies & Run Tests
+        run: mvn clean test
+
+      - name: Generate Allure Report
+        run: |
+          npm install -g allure-commandline
+          allure generate target/allure-results --clean -o target/allure-report
+
+      - name: Upload Allure Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: target/allure-report
