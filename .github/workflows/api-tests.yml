@@ -27,7 +27,26 @@ jobs:
 
       - name: Generate Allure report
         if: always()
-        run: mvn allure:report
+        run: |
+          # Generate the Allure report
+          mvn io.qameta.allure:allure-maven:report
+          
+          # Make sure a directory exists
+          mkdir -p allure-report
+          
+          # Copy everything including index.html to the report folder
+          cp -r target/site/allure-maven-plugin/* allure-report/
+          
+          # Check if index.html exists (for debugging)
+          ls -l allure-report
+
+      - name: Deploy Allure report to GitHub Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./allure-report
+          publish_branch: gh-pages
 
       - name: Upload Allure report artifact
         if: always()
@@ -47,10 +66,4 @@ jobs:
                 {
                   "color": "${{ job.status == 'success' && '#36a64f' || '#ff0000' }}",
                   "title": "Test Execution Result: ${{ job.status }}",
-                  "text": "Allure report is available as an artifact or on GitHub Pages.\n\n🔗 <https://<your-username>.github.io/<your-repo-name>|View Allure Report>",
-                  "footer": "GitHub Actions • RestAssured Test Run"
-                }
-              ]
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+                  "text": "Allure report has been published.\n\n🔗 <https://${{ github.repository_owner }}.github.io_
