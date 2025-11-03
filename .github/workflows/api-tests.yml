@@ -66,4 +66,10 @@ jobs:
                 {
                   "color": "${{ job.status == 'success' && '#36a64f' || '#ff0000' }}",
                   "title": "Test Execution Result: ${{ job.status }}",
-                  "text": "Allure report has been published.\n\n🔗 <https://${{ github.repository_owner }}.github.io_
+                  "text": "Allure report has been published.\n\n🔗 <https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}|View Allure Report>",
+                  "footer": "GitHub Actions • RestAssured Test Run"
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
